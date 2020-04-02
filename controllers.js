@@ -6,7 +6,7 @@ var connection = require('./connection');
 exports.users = function(req, res) {
     connection.query('SELECT * FROM member', function (error, rows, fields){
         if(error){
-            console.log(error)
+            response.ok(error,res)
         } else{
             response.ok(rows, res)
         }
@@ -14,21 +14,23 @@ exports.users = function(req, res) {
 };
 
 exports.insertGroupName = function(req, res) {
-    const group_name = req.group_name;
+    const group_name = req.body.group_name;
     connection.query('INSERT INTO list_group (group_name) VALUES(?)',[group_name], function (error, rows, fields){
         if(error){
-            console.log(error)
+            response.ok(error,res)
         } else{
-            response.ok(rows, res)
+            connection.query('SELECT * FROM list_group ORDER BY id DESC LIMIT 1', function (error, rows, fields){
+                response.ok(rows[0], res)
+            });
         }
     });
 };
 
 exports.insertMember = function(req, res) {
-    const group_name = req.group_name;
-    connection.query('INSERT INTO member_of_group (group_id,member_id) VALUES ?',[group_name], function (error, rows, fields){
+    const data = req.body.data;
+    connection.query('INSERT INTO member_of_group (group_id,member_id) VALUES ?',[data], function (error, rows, fields){
         if(error){
-            console.log(error)
+            response.ok(error,res)
         } else{
             response.ok(rows, res)
         }
